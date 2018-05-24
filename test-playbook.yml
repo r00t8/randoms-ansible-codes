@@ -1,0 +1,90 @@
+---
+- hosts: all
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  vars:
+    MySQL_root_pass: "{{ mysql_root_pass }}"
+
+  tasks:
+    - name: install apache on CentOS
+      yum: 
+         name=httpd 
+         state=present
+      notify:
+      - check if apache exists
+      - start_apache redhat
+      when: ansible_os_family == "RedHat"
+
+    - name: install apache debian
+      apt: 
+         name=apache2
+         state=present
+      notify:
+      - check if apache exists
+      - start_apache debian
+      when: ansible_os_family == "Debian"
+
+
+    - name: install php on CentOS
+      yum:
+         name=php
+         state=latest
+      when: ansible_os_family == "RedHat"
+
+    - name: install php debian
+      apt:
+         name=php7.0
+         state=latest
+      when: ansible_os_family == "Debian"
+
+    - name: write index html
+      template:
+        src: /home/jawwad.azam/ansible_files/vars_files
+        dest: /var/www/html/index.html
+
+    - name: Set MySQL root password before installing
+      debconf: 
+        name='mysql-server'
+        question='mysql-server/root_password'
+        value='{{MySQL_root_pass | quote}}' 
+        vtype='password'
+
+    - name: Confirm MySQL root password before installing
+      debconf: 
+        name='mysql-server' 
+        question='mysql-server/root_password_again' 
+        value='{{MySQL_root_pass | quote}}' 
+        vtype='password'
+
+    - name: Install MySQL  debian
+      apt: 
+        package={{ item }} 
+        state=latest 
+        force=yes 
+        update_cache=yes 
+        cache_valid_time=3600
+      when: ansible_os_family == 'Debian'
+      with_items:
+        - mysql-server
+        - mysql-client
+        - python-mysqldb
+
+  handlers:
+    - name: check if apache exists redhat
+      stat: path=/etc/init.d/httpd
+      register: service_status
+
+    - name: check if apache exists debian
+      stat: path=/etc/init.d/apache2
+      register: service_status
+   
+    - name: start_apache debian
+      service:
+        name=apache2
+        state=started
+ 
+    - name: start_apache redhat
+      service: 
+        name=httpd
+        state=started

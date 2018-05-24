@@ -1,0 +1,13 @@
+---
+- name: This is a Play
+  hosts: webservers
+  remote_user: shk
+  become: yes
+  gather_facts: yes
+  vars:
+    state: present
+
+  tasks:
+    - name: Install Apache
+      yum: name=httpd state={{ state }}
+      when: ansible_os_family == "RedHat"

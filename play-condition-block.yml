@@ -1,0 +1,19 @@
+---
+- name: This is a Play
+  hosts: web-servers
+  remote_user: shk
+  become: yes
+  gather_facts: no
+  vars:
+    state: present
+
+  tasks:
+    - block:
+      yum: name=httpd state={{ state }}
+      with-items:
+        - httpd
+        - php
+
+    - template: src=templates/web.conf.j2 dest=/etc/httpd/conf.d/web.conf
+    - service: name=httpd state=started enabled=True
+    when: ansible_distribution == 'CentOS'

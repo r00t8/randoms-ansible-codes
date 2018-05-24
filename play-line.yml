@@ -1,0 +1,19 @@
+---
+- name: This is a Play
+  hosts: web-servers
+  remote_user: shk
+  become: yes
+  gather_facts: no
+  vars:
+    state: present
+
+  tasks:
+    - name: Updating selinux policy
+      lineinfile: dest=/etc/selinux/config 
+                  regexp=^SELINUX=
+                  line=SELINUX=enforcing
+    - name: Updating port in apache configuration
+      lineinfile: dest=/etc/httpd/conf/httpd.conf 
+                  regexp="^Listen "
+                  insertafter="^#Listen " 
+                  line="Listen 8080"

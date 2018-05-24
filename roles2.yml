@@ -1,0 +1,15 @@
+---
+- hosts: webservers
+  serial: 1
+  pre_tasks:
+    - command:lb_rm.sh {{ inventory_hostname }}
+      delegate_to: lb
+    - command: mon_rm.sh {{ inventory_hostname }}
+      delegate_to: nagios
+  roles:
+    - myapp
+  post_tasks:
+    - command: mon_add.sh {{ inventory_hostname }}
+      delegate_to: nagios
+    - command: lb_add.sh {{ inventory_hostname }}
+      delegate_to: lb

@@ -1,0 +1,15 @@
+---
+- name: This is a Play
+  hosts: web-servers
+  remote_user: shk
+  become: yes
+  gather_facts: no
+  vars:
+    state: present
+
+  tasks:
+    - name: Example setting the Apache version
+      shell: httpd -v|grep version|awk '{print $3}'|cut -f2 -d'/'
+      register: result
+
+    - debug: var=result

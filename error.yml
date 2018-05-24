@@ -1,0 +1,3 @@
+- name: ping host
+ command: ping -c1 www.asdasdasd.com
+ ignore_errors: yes

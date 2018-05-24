@@ -1,0 +1,39 @@
+---
+
+- hosts: all
+  remote_user: client
+  become: yes
+  become_method: sudo
+
+  tasks:
+  - name: uninstalling apache on ubuntu
+    apt:
+      name: apache2
+      state: absent
+    when:
+      ansible_os_family == "Debian"
+  - name: uninstalling php on ubuntu
+    apt:
+      name: php7.0
+      state: absent
+    when:
+      ansible_os_family == "Debian"
+  - name: uninstalling mysql on ubuntu
+    apt:
+      name: mysql-server
+      state: absent
+    when:
+      ansible_os_family == "Debian"
+
+  - name: uninstalling apache on centos
+    yum:
+      name: httpd
+      state: absent
+    when:
+      ansible_os_family == "RedHat"
+  - name: uninstalling php on centos
+    yum:
+      name: httpd
+      state: absent
+    when:
+      ansible_os_family == "RedHat"

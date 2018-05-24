@@ -1,0 +1,23 @@
+---
+- name: This is a Play
+  hosts: web-servers
+  remote_user: shk
+  become: yes
+  gather_facts: no
+  vars:
+    state: present
+
+  tasks:
+    - name: Install Apache
+      yum: name=httpd state={{ state }}
+      with-items:
+        - httpd
+        - php
+      notify: Restart Apache
+
+    - template: src=templates/web.conf.j2 dest=/etc/httpd/conf.d/web.conf
+      notify: Restart Apache
+
+  handlers:
+    - name: Restart Apache
+      service: name=httpd state=restarted

@@ -1,0 +1,15 @@
+- name: setting facts
+  hosts: all
+  remote_user: shk
+  become: yes
+
+  tasks:
+    - name: searching apache version
+      shell: httpd -v|grep version|awk '{print $3}'|cut -f2 -d'/'
+      register: result
+    - set_fact:
+        apache_version: ”{{ result.stdout }}"
+    - name: apache_version
+      debug: var=apache_version
+    - name: result error
+      debug: var= "{{ result.stderr }}"

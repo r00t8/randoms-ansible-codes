@@ -1,0 +1,36 @@
+---
+- hosts: all
+  remote_user: ansible
+  become: yes
+  become_method: sudo
+  vars:
+    MySQL_root_pass: "{{ mysql_root_pass }}"
+
+  tasks:
+    - name: remove apache from redhat family
+      yum:
+        name=httpd
+        state=absent
+      when: ansible_os_family == "RedHat"
+
+
+    - name: remove apache from debian os family
+      apt:
+        name=apache2
+        state=absent
+      when: ansible_os_family == "Debian"
+
+
+    - name: remove php from redhat family
+      yum:
+        name=php
+        state=absent
+      when: ansible_os_family == "RedHat"
+
+
+    - name: remove php from debian os family
+      apt:
+        name=php7.0
+        state=absent
+      when: ansible_os_family == "Debian"
+
